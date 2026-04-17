@@ -1,0 +1,12 @@
+---
+pre-commit:
+  commands:
+    no-shell-functions:
+      glob: "*.sh"
+      run: timeout ${LEFTHOOK_NO_SHELL_FUNCTIONS_TIMEOUT:-30} lefthook-no-shell-functions {staged_files}
+
+pre-push:
+  commands:
+    no-shell-functions:
+      glob: "*.sh"
+      run: timeout ${LEFTHOOK_NO_SHELL_FUNCTIONS_TIMEOUT:-30} lefthook-no-shell-functions {push_files}
