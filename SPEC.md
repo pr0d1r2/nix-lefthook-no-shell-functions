@@ -91,3 +91,5 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 5. **Hook presence check is fragile**: `dev.sh` checks `[ -f .git/hooks/pre-commit ]` to decide whether to run `lefthook install`. If lefthook uses core.hooksPath or the hook file is a symlink, this check may not detect the correct state.
 
 6. **No markdownlint in lefthook**: `.markdownlint.yml` exists but no markdownlint linter is configured in `lefthook.yml`, violating the project's own linter skill rule that every file type must have an assigned linter.
+
+7. **`file-size-check` fails on `SPEC.md`**: `SPEC.md` (6429 bytes) exceeds the default 4096-byte limit in `config/lefthook/file_size_limits.yml` because no `md` extension override was defined. Fixed by adding `md: 8192` to the extensions map.
