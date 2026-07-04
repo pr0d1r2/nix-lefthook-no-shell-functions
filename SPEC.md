@@ -73,7 +73,7 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 | `x` | T11 | Add bats tests confirming comment-prefixed lines are not false positives — `# myfunc() {`, `# function name {`, `# function name() {`, and indented variants all exit 0; regex already rejects `#` (not `[a-zA-Z_]` or `function`) so tests are GREEN against current code [§V.9, §B.1] |
 | `x` | T12 | Correct §B.1 — remove false claim that `# myfunc() {` triggers a match; the `FUNC_RE` regex requires `[a-zA-Z_]` or `function` after optional whitespace so `#` never matches; narrow description to heredoc and quoted-string cases only [§B.1] |
 | `d` | T4 | ~~Add test for function definitions inside comments (should not false-positive, currently does)~~ decomposed → T11, T12 |
-| `.` | T5 | Align `actions/checkout` version in `update-pins.yml` (v4) with `ci.yml` (v6) |
+| `x` | T5 | Align `actions/checkout` version in `update-pins.yml` (v4) with `ci.yml` (v6) |
 | `.` | T6 | Extract `nix/dev/shell.sh` from `dev.sh` per flake skill for flake modularity |
 | `.` | T7 | Add markdownlint lefthook remote or local command for `.md` files |
 | `.` | T8 | Add test for function definition on the last line without trailing newline |
@@ -86,7 +86,7 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 
 2. **`.envrc` missing `watch_file` directives**: The `.envrc` contains only `use flake` and does not watch `flake.nix`, `flake.lock`, or `dev.sh`. Changes to these files will not automatically trigger a direnv reload.
 
-3. **Checkout version inconsistency**: `ci.yml` uses `actions/checkout@v6` while `update-pins.yml` uses `actions/checkout@v4`.
+3. ~~**Checkout version inconsistency**: `ci.yml` uses `actions/checkout@v6` while `update-pins.yml` uses `actions/checkout@v4`.~~ Fixed: `update-pins.yml` now uses `actions/checkout@v6`.
 
 4. **`ci` devShell is an undifferentiated alias**: `devShells.<system>.ci` is defined as `ci = default;` with no CI-specific changes, making it a no-op alias that could confuse consumers.
 
