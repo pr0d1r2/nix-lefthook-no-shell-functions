@@ -97,3 +97,66 @@ SH
     assert_output --partial "dirty.sh:2: shell function definition: bad_func()"
     refute_output --partial "clean.sh"
 }
+
+@test "space-indented posix-style function fails" {
+    cat > "$TMP/indent.sh" <<'SH'
+#!/usr/bin/env bash
+  myfunc() {
+    echo "hello"
+  }
+SH
+    run lefthook-no-shell-functions "$TMP/indent.sh"
+    assert_failure
+    assert_output --partial "indent.sh:2: shell function definition:"
+    assert_output --partial "myfunc()"
+}
+
+@test "tab-indented posix-style function fails" {
+    printf '#!/usr/bin/env bash\n\tmyfunc() {\n\t\techo "hello"\n\t}\n' > "$TMP/indent.sh"
+    run lefthook-no-shell-functions "$TMP/indent.sh"
+    assert_failure
+    assert_output --partial "indent.sh:2: shell function definition:"
+    assert_output --partial "myfunc()"
+}
+
+@test "space-indented function keyword fails" {
+    cat > "$TMP/indent.sh" <<'SH'
+#!/usr/bin/env bash
+    function myfunc {
+        echo "hello"
+    }
+SH
+    run lefthook-no-shell-functions "$TMP/indent.sh"
+    assert_failure
+    assert_output --partial "indent.sh:2: shell function definition:"
+    assert_output --partial "function myfunc"
+}
+
+@test "tab-indented function keyword fails" {
+    printf '#!/usr/bin/env bash\n\tfunction myfunc {\n\t\techo "hello"\n\t}\n' > "$TMP/indent.sh"
+    run lefthook-no-shell-functions "$TMP/indent.sh"
+    assert_failure
+    assert_output --partial "indent.sh:2: shell function definition:"
+    assert_output --partial "function myfunc"
+}
+
+@test "space-indented function keyword with parens fails" {
+    cat > "$TMP/indent.sh" <<'SH'
+#!/usr/bin/env bash
+  function myfunc() {
+      echo "hello"
+  }
+SH
+    run lefthook-no-shell-functions "$TMP/indent.sh"
+    assert_failure
+    assert_output --partial "indent.sh:2: shell function definition:"
+    assert_output --partial "function myfunc()"
+}
+
+@test "tab-indented function keyword with parens fails" {
+    printf '#!/usr/bin/env bash\n\tfunction myfunc() {\n\t\techo "hello"\n\t}\n' > "$TMP/indent.sh"
+    run lefthook-no-shell-functions "$TMP/indent.sh"
+    assert_failure
+    assert_output --partial "indent.sh:2: shell function definition:"
+    assert_output --partial "function myfunc()"
+}
