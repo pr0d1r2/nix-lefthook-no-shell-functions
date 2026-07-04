@@ -160,3 +160,81 @@ SH
     assert_output --partial "indent.sh:2: shell function definition:"
     assert_output --partial "function myfunc()"
 }
+
+@test "comment with posix-style function is not a false positive" {
+    cat > "$TMP/comment.sh" <<'SH'
+#!/usr/bin/env bash
+# myfunc() {
+echo "hello"
+SH
+    run lefthook-no-shell-functions "$TMP/comment.sh"
+    assert_success
+}
+
+@test "comment with function keyword is not a false positive" {
+    cat > "$TMP/comment.sh" <<'SH'
+#!/usr/bin/env bash
+# function name {
+echo "hello"
+SH
+    run lefthook-no-shell-functions "$TMP/comment.sh"
+    assert_success
+}
+
+@test "comment with function keyword and parens is not a false positive" {
+    cat > "$TMP/comment.sh" <<'SH'
+#!/usr/bin/env bash
+# function name() {
+echo "hello"
+SH
+    run lefthook-no-shell-functions "$TMP/comment.sh"
+    assert_success
+}
+
+@test "space-indented comment with posix-style function is not a false positive" {
+    cat > "$TMP/comment.sh" <<'SH'
+#!/usr/bin/env bash
+  # myfunc() {
+echo "hello"
+SH
+    run lefthook-no-shell-functions "$TMP/comment.sh"
+    assert_success
+}
+
+@test "tab-indented comment with posix-style function is not a false positive" {
+    printf '#!/usr/bin/env bash\n\t# myfunc() {\necho "hello"\n' > "$TMP/comment.sh"
+    run lefthook-no-shell-functions "$TMP/comment.sh"
+    assert_success
+}
+
+@test "space-indented comment with function keyword is not a false positive" {
+    cat > "$TMP/comment.sh" <<'SH'
+#!/usr/bin/env bash
+  # function name {
+echo "hello"
+SH
+    run lefthook-no-shell-functions "$TMP/comment.sh"
+    assert_success
+}
+
+@test "tab-indented comment with function keyword is not a false positive" {
+    printf '#!/usr/bin/env bash\n\t# function name {\necho "hello"\n' > "$TMP/comment.sh"
+    run lefthook-no-shell-functions "$TMP/comment.sh"
+    assert_success
+}
+
+@test "space-indented comment with function keyword and parens is not a false positive" {
+    cat > "$TMP/comment.sh" <<'SH'
+#!/usr/bin/env bash
+  # function name() {
+echo "hello"
+SH
+    run lefthook-no-shell-functions "$TMP/comment.sh"
+    assert_success
+}
+
+@test "tab-indented comment with function keyword and parens is not a false positive" {
+    printf '#!/usr/bin/env bash\n\t# function name() {\necho "hello"\n' > "$TMP/comment.sh"
+    run lefthook-no-shell-functions "$TMP/comment.sh"
+    assert_success
+}
