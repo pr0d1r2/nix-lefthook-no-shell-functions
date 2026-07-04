@@ -70,7 +70,9 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 | `x` | T1 | Add `watch_file` entries to `.envrc` for `flake.nix`, `flake.lock`, and `dev.sh` per direnv skill |
 | `x` | T2 | Add test for multiple files where some pass and some fail (mixed-result scenario) |
 | `x` | T3 | Add test for indented function definitions (leading tabs/spaces) |
-| `.` | T4 | Add test for function definitions inside comments (should not false-positive, currently does) |
+| `.` | T11 | Add bats tests confirming comment-prefixed lines are not false positives — `# myfunc() {`, `# function name {`, `# function name() {`, and indented variants all exit 0; regex already rejects `#` (not `[a-zA-Z_]` or `function`) so tests are GREEN against current code [§V.9, §B.1] |
+| `.` | T12 | Correct §B.1 — remove false claim that `# myfunc() {` triggers a match; the `FUNC_RE` regex requires `[a-zA-Z_]` or `function` after optional whitespace so `#` never matches; narrow description to heredoc and quoted-string cases only [§B.1] |
+| `d` | T4 | ~~Add test for function definitions inside comments (should not false-positive, currently does)~~ decomposed → T11, T12 |
 | `.` | T5 | Align `actions/checkout` version in `update-pins.yml` (v4) with `ci.yml` (v6) |
 | `.` | T6 | Extract `nix/dev/shell.sh` from `dev.sh` per flake skill for flake modularity |
 | `.` | T7 | Add markdownlint lefthook remote or local command for `.md` files |
