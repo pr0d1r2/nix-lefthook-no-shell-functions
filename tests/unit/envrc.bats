@@ -38,11 +38,11 @@ teardown() {
     assert_success
 }
 
-@test "watches dev.sh for changes" {
+@test "watches nix/dev/shell.sh for changes" {
     # shellcheck disable=SC2031
     export PATH="$TMPDIR/bin:$PATH"
     run bash "$TMPDIR/.envrc"
     assert_success
-    run grep -x "dev.sh" "$WATCH_LOG"
+    run grep -x "nix/dev/shell.sh" "$WATCH_LOG"
     assert_success
 }
