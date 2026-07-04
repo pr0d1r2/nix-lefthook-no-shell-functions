@@ -45,7 +45,7 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 | Variable | Default | Purpose |
 |---|---|---|
 | `LEFTHOOK_NO_SHELL_FUNCTIONS_TIMEOUT` | `30` | Timeout in seconds for the lefthook command |
-| `BATS_LIB_PATH` | Set by `dev.sh` | Path to bats helper libraries (bats-support, bats-assert, bats-file) |
+| `BATS_LIB_PATH` | Set by `nix/dev/shell.sh` | Path to bats helper libraries (bats-support, bats-assert, bats-file) |
 
 ### Configuration files
 
@@ -74,7 +74,7 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 | `x` | T12 | Correct §B.1 — remove false claim that `# myfunc() {` triggers a match; the `FUNC_RE` regex requires `[a-zA-Z_]` or `function` after optional whitespace so `#` never matches; narrow description to heredoc and quoted-string cases only [§B.1] |
 | `d` | T4 | ~~Add test for function definitions inside comments (should not false-positive, currently does)~~ decomposed → T11, T12 |
 | `x` | T5 | Align `actions/checkout` version in `update-pins.yml` (v4) with `ci.yml` (v6) |
-| `.` | T6 | Extract `nix/dev/shell.sh` from `dev.sh` per flake skill for flake modularity |
+| `x` | T6 | Extract `nix/dev/shell.sh` from `dev.sh` per flake skill for flake modularity |
 | `.` | T7 | Add markdownlint lefthook remote or local command for `.md` files |
 | `.` | T8 | Add test for function definition on the last line without trailing newline |
 | `.` | T9 | Add test verifying stderr output format includes correct file path and line number |
@@ -84,13 +84,13 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 
 1. **False positives on heredocs and quoted strings**: The regex `FUNC_RE` matches function-definition-like lines inside heredoc bodies and multi-line quoted strings. Text inside `<<'EOF'...EOF` or a multi-line `"..."` that resembles a function definition will trigger a false positive. Comments are not affected — the regex requires `[a-zA-Z_]` or `function` after optional whitespace, so `#`-prefixed lines never match. This is a known trade-off for simplicity.
 
-2. **`.envrc` missing `watch_file` directives**: The `.envrc` contains only `use flake` and does not watch `flake.nix`, `flake.lock`, or `dev.sh`. Changes to these files will not automatically trigger a direnv reload.
+2. **`.envrc` missing `watch_file` directives**: The `.envrc` contains only `use flake` and does not watch `flake.nix`, `flake.lock`, or `nix/dev/shell.sh`. Changes to these files will not automatically trigger a direnv reload.
 
 3. ~~**Checkout version inconsistency**: `ci.yml` uses `actions/checkout@v6` while `update-pins.yml` uses `actions/checkout@v4`.~~ Fixed: `update-pins.yml` now uses `actions/checkout@v6`.
 
 4. **`ci` devShell is an undifferentiated alias**: `devShells.<system>.ci` is defined as `ci = default;` with no CI-specific changes, making it a no-op alias that could confuse consumers.
 
-5. **Hook presence check is fragile**: `dev.sh` checks `[ -f .git/hooks/pre-commit ]` to decide whether to run `lefthook install`. If lefthook uses core.hooksPath or the hook file is a symlink, this check may not detect the correct state.
+5. **Hook presence check is fragile**: `nix/dev/shell.sh` checks `[ -f .git/hooks/pre-commit ]` to decide whether to run `lefthook install`. If lefthook uses core.hooksPath or the hook file is a symlink, this check may not detect the correct state.
 
 6. **No markdownlint in lefthook**: `.markdownlint.yml` exists but no markdownlint linter is configured in `lefthook.yml`, violating the project's own linter skill rule that every file type must have an assigned linter.
 

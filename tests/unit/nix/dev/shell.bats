@@ -9,7 +9,7 @@ setup() {
     mkdir -p "$TMPDIR/repo/.git/hooks"
     touch "$TMPDIR/repo/.git/hooks/pre-commit"
 
-    sed 's|@BATS_LIB_PATH@|/test/lib|' dev.sh > "$TMPDIR/dev.sh"
+    sed 's|@BATS_LIB_PATH@|/test/lib|' nix/dev/shell.sh > "$TMPDIR/shell.sh"
 
     mkdir -p "$TMPDIR/bin"
     cat > "$TMPDIR/bin/lefthook" <<'SH'
@@ -25,7 +25,7 @@ teardown() {
 
 @test "sets BATS_LIB_PATH from placeholder" {
     cd "$TMPDIR/repo"
-    run bash -c 'unset BATS_LIB_PATH; source "$1"; echo "$BATS_LIB_PATH"' -- "$TMPDIR/dev.sh"
+    run bash -c 'unset BATS_LIB_PATH; source "$1"; echo "$BATS_LIB_PATH"' -- "$TMPDIR/shell.sh"
     assert_success
     assert_output "/test/lib/share/bats"
 }
@@ -38,7 +38,7 @@ teardown() {
     # shellcheck disable=SC2030
     export LEFTHOOK_LOG="$TMPDIR/log"
     # shellcheck disable=SC1091
-    source "$TMPDIR/dev.sh"
+    source "$TMPDIR/shell.sh"
     assert [ -f "$LEFTHOOK_LOG" ]
     run cat "$LEFTHOOK_LOG"
     assert_output "lefthook install"
@@ -51,6 +51,6 @@ teardown() {
     # shellcheck disable=SC2031
     export LEFTHOOK_LOG="$TMPDIR/log"
     # shellcheck disable=SC1091
-    source "$TMPDIR/dev.sh"
+    source "$TMPDIR/shell.sh"
     assert [ ! -f "$LEFTHOOK_LOG" ]
 }

@@ -224,7 +224,7 @@
             ]
             ++ (lefthookWrappersFor pkgs);
             shellHook = builtins.replaceStrings [ "@BATS_LIB_PATH@" ] [ "${batsWithLibs}" ] (
-              builtins.readFile ./dev.sh
+              builtins.readFile ./nix/dev/shell.sh
             );
           };
           ci = default;
