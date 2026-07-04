@@ -80,3 +80,20 @@ SH
     assert_output --partial "foo()"
     assert_output --partial "bar()"
 }
+
+@test "multiple files with some passing and some failing" {
+    cat > "$TMP/clean.sh" <<'SH'
+#!/usr/bin/env bash
+echo "no functions here"
+SH
+    cat > "$TMP/dirty.sh" <<'SH'
+#!/usr/bin/env bash
+bad_func() {
+    echo "has function"
+}
+SH
+    run lefthook-no-shell-functions "$TMP/clean.sh" "$TMP/dirty.sh"
+    assert_failure
+    assert_output --partial "dirty.sh:2: shell function definition: bad_func()"
+    refute_output --partial "clean.sh"
+}
