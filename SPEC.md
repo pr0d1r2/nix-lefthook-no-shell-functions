@@ -68,7 +68,7 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 | status | id | goal |
 |---|---|---|
 | `x` | T1 | Add `watch_file` entries to `.envrc` for `flake.nix`, `flake.lock`, and `dev.sh` per direnv skill |
-| `.` | T2 | Add test for multiple files where some pass and some fail (mixed-result scenario) |
+| `x` | T2 | Add test for multiple files where some pass and some fail (mixed-result scenario) |
 | `.` | T3 | Add test for indented function definitions (leading tabs/spaces) |
 | `.` | T4 | Add test for function definitions inside comments (should not false-positive, currently does) |
 | `.` | T5 | Align `actions/checkout` version in `update-pins.yml` (v4) with `ci.yml` (v6) |
