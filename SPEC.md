@@ -24,7 +24,7 @@
 
 ### CLI
 
-```
+```text
 lefthook-no-shell-functions [file1.sh file2.sh ...]
 ```
 
@@ -35,7 +35,7 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 ### Nix flake outputs
 
 | Output | Description |
-|---|---|
+| --- | --- |
 | `packages.<system>.default` | `writeShellApplication` wrapping `lefthook-no-shell-functions.sh` |
 | `devShells.<system>.default` | Dev shell with the tool, bats, lefthook, and all remote linter wrappers |
 | `devShells.<system>.ci` | Alias for `default` |
@@ -43,14 +43,14 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 ### Environment variables
 
 | Variable | Default | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `LEFTHOOK_NO_SHELL_FUNCTIONS_TIMEOUT` | `30` | Timeout in seconds for the lefthook command |
 | `BATS_LIB_PATH` | Set by `nix/dev/shell.sh` | Path to bats helper libraries (bats-support, bats-assert, bats-file) |
 
 ### Configuration files
 
 | File | Format | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `lefthook.yml` | YAML | Local lefthook config with remote imports and the `no-shell-functions` command |
 | `lefthook-remote.yml` | YAML | Minimal config for consumers using lefthook remote integration |
 | `config/lefthook/file_size_limits.yml` | YAML | Per-extension file size limits (default 4096, lock 65536, nix 10240) |
@@ -61,12 +61,12 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 
 ### Lefthook remotes
 
-17 remote linter configurations are imported from `pr0d1r2/nix-lefthook-*` repos: nixfmt, shellcheck, shfmt, statix, deadnix, nix-no-embedded-shell, bats-parse, bats-unit, yamllint, nix-flake-check, typos, trailing-whitespace, missing-final-newline, git-conflict-markers, editorconfig-checker, git-no-local-paths, file-size-check.
+18 remote linter configurations are imported from `pr0d1r2/nix-lefthook-*` repos: nixfmt, shellcheck, shfmt, statix, deadnix, nix-no-embedded-shell, bats-parse, bats-unit, yamllint, nix-flake-check, typos, trailing-whitespace, missing-final-newline, git-conflict-markers, editorconfig-checker, git-no-local-paths, file-size-check, markdownlint.
 
 ## §T — Tasks
 
 | status | id | goal |
-|---|---|---|
+| --- | --- | --- |
 | `x` | T1 | Add `watch_file` entries to `.envrc` for `flake.nix`, `flake.lock`, and `dev.sh` per direnv skill |
 | `x` | T2 | Add test for multiple files where some pass and some fail (mixed-result scenario) |
 | `x` | T3 | Add test for indented function definitions (leading tabs/spaces) |
@@ -75,7 +75,7 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 | `d` | T4 | ~~Add test for function definitions inside comments (should not false-positive, currently does)~~ decomposed → T11, T12 |
 | `x` | T5 | Align `actions/checkout` version in `update-pins.yml` (v4) with `ci.yml` (v6) |
 | `x` | T6 | Extract `nix/dev/shell.sh` from `dev.sh` per flake skill for flake modularity |
-| `.` | T7 | Add markdownlint lefthook remote or local command for `.md` files |
+| `x` | T7 | Add markdownlint lefthook remote or local command for `.md` files |
 | `.` | T8 | Add test for function definition on the last line without trailing newline |
 | `.` | T9 | Add test verifying stderr output format includes correct file path and line number |
 | `.` | T10 | Consider filtering out function-like patterns inside heredocs and quoted strings |
@@ -92,7 +92,7 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 
 5. **Hook presence check is fragile**: `nix/dev/shell.sh` checks `[ -f .git/hooks/pre-commit ]` to decide whether to run `lefthook install`. If lefthook uses core.hooksPath or the hook file is a symlink, this check may not detect the correct state.
 
-6. **No markdownlint in lefthook**: `.markdownlint.yml` exists but no markdownlint linter is configured in `lefthook.yml`, violating the project's own linter skill rule that every file type must have an assigned linter.
+6. ~~**No markdownlint in lefthook**: `.markdownlint.yml` exists but no markdownlint linter is configured in `lefthook.yml`, violating the project's own linter skill rule that every file type must have an assigned linter.~~ Fixed: markdownlint remote added to `lefthook.yml` and wrapper added to `flake.nix`.
 
 7. **`file-size-check` fails on `SPEC.md`**: `SPEC.md` (6429 bytes) exceeds the default 4096-byte limit in `config/lefthook/file_size_limits.yml` because no `md` extension override was defined. Fixed by adding `md: 8192` to the extensions map.
 
