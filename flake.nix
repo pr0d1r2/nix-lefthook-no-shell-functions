@@ -33,6 +33,10 @@
       url = "github:pr0d1r2/nix-lefthook-git-no-local-paths";
       flake = false;
     };
+    nix-lefthook-markdownlint-src = {
+      url = "github:pr0d1r2/nix-lefthook-markdownlint";
+      flake = false;
+    };
     nix-lefthook-missing-final-newline-src = {
       url = "github:pr0d1r2/nix-lefthook-missing-final-newline";
       flake = false;
@@ -81,6 +85,7 @@
       nix-lefthook-file-size-check-src,
       nix-lefthook-git-conflict-markers-src,
       nix-lefthook-git-no-local-paths-src,
+      nix-lefthook-markdownlint-src,
       nix-lefthook-missing-final-newline-src,
       nix-lefthook-nix-no-embedded-shell-src,
       nix-lefthook-nixfmt-src,
@@ -157,6 +162,9 @@
           })
           (wrap "lefthook-git-no-local-paths" nix-lefthook-git-no-local-paths-src {
             runtimeInputs = [ pkgs.gnugrep ];
+          })
+          (wrap "lefthook-markdownlint" nix-lefthook-markdownlint-src {
+            runtimeInputs = [ pkgs.markdownlint-cli ];
           })
           (wrap "lefthook-missing-final-newline" nix-lefthook-missing-final-newline-src { })
           (pkgs.writeShellApplication {

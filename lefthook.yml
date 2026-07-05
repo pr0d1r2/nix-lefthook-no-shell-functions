@@ -51,6 +51,10 @@ remotes:
     ref: main
     configs:
       - lefthook-remote.yml
+  - git_url: https://github.com/pr0d1r2/nix-lefthook-markdownlint
+    ref: main
+    configs:
+      - lefthook-remote.yml
   - git_url: https://github.com/pr0d1r2/nix-lefthook-missing-final-newline
     ref: main
     configs:
