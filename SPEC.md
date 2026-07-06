@@ -76,7 +76,7 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 | `x` | T5 | Align `actions/checkout` version in `update-pins.yml` (v4) with `ci.yml` (v6) |
 | `x` | T6 | Extract `nix/dev/shell.sh` from `dev.sh` per flake skill for flake modularity |
 | `x` | T7 | Add markdownlint lefthook remote or local command for `.md` files |
-| `.` | T8 | Add test for function definition on the last line without trailing newline |
+| `x` | T8 | Add test for function definition on the last line without trailing newline |
 | `.` | T9 | Add test verifying stderr output format includes correct file path and line number |
 | `.` | T10 | Consider filtering out function-like patterns inside heredocs and quoted strings |
 
