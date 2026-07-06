@@ -494,3 +494,16 @@ OUTER
     assert_output --partial "real_func()"
     refute_output --partial "myfunc()"
 }
+
+@test "escaped quotes in normal context do not break state tracking" {
+    cat > "$TMP/escape.sh" <<'OUTER'
+#!/usr/bin/env bash
+echo \"hello\"
+myfunc() {
+  echo "bad"
+}
+OUTER
+    run lefthook-no-shell-functions "$TMP/escape.sh"
+    assert_failure
+    assert_output --partial "escape.sh:3: shell function definition: myfunc()"
+}
