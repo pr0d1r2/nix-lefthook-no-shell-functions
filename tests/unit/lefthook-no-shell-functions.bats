@@ -238,3 +238,24 @@ SH
     run lefthook-no-shell-functions "$TMP/comment.sh"
     assert_success
 }
+
+@test "posix-style function on last line without trailing newline" {
+    printf '#!/usr/bin/env bash\nmyfunc() {' > "$TMP/noeol.sh"
+    run lefthook-no-shell-functions "$TMP/noeol.sh"
+    assert_failure
+    assert_output --partial "noeol.sh:2: shell function definition: myfunc()"
+}
+
+@test "function keyword on last line without trailing newline" {
+    printf '#!/usr/bin/env bash\nfunction myfunc {' > "$TMP/noeol.sh"
+    run lefthook-no-shell-functions "$TMP/noeol.sh"
+    assert_failure
+    assert_output --partial "noeol.sh:2: shell function definition: function myfunc"
+}
+
+@test "function keyword with parens on last line without trailing newline" {
+    printf '#!/usr/bin/env bash\nfunction myfunc() {' > "$TMP/noeol.sh"
+    run lefthook-no-shell-functions "$TMP/noeol.sh"
+    assert_failure
+    assert_output --partial "noeol.sh:2: shell function definition: function myfunc()"
+}
