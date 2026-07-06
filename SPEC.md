@@ -78,11 +78,11 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 | `x` | T7 | Add markdownlint lefthook remote or local command for `.md` files |
 | `x` | T8 | Add test for function definition on the last line without trailing newline |
 | `x` | T9 | Add test verifying stderr output format includes correct file path and line number |
-| `.` | T10 | Consider filtering out function-like patterns inside heredocs and quoted strings |
+| `x` | T10 | Consider filtering out function-like patterns inside heredocs and quoted strings |
 
 ## §B — Bugs / Known Issues
 
-1. **False positives on heredocs and quoted strings**: The regex `FUNC_RE` matches function-definition-like lines inside heredoc bodies and multi-line quoted strings. Text inside `<<'EOF'...EOF` or a multi-line `"..."` that resembles a function definition will trigger a false positive. Comments are not affected — the regex requires `[a-zA-Z_]` or `function` after optional whitespace, so `#`-prefixed lines never match. This is a known trade-off for simplicity.
+1. ~~**False positives on heredocs and quoted strings**: The regex `FUNC_RE` matches function-definition-like lines inside heredoc bodies and multi-line quoted strings. Text inside `<<'EOF'...EOF` or a multi-line `"..."` that resembles a function definition will trigger a false positive.~~ Fixed: a character-by-character state machine now tracks heredoc bodies (including `<<-` tab-stripping variants and quoted/backslash-escaped delimiters) and multi-line single/double-quoted strings, skipping `FUNC_RE` matching inside them.
 
 2. **`.envrc` missing `watch_file` directives**: The `.envrc` contains only `use flake` and does not watch `flake.nix`, `flake.lock`, or `nix/dev/shell.sh`. Changes to these files will not automatically trigger a direnv reload.
 
