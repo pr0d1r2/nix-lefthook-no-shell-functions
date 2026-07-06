@@ -50,6 +50,7 @@ for file in "$@"; do
       case "$state" in
         normal)
           case "$ch" in
+            \\) i=$((i + 1)) ;;
             \') state=single_quote ;;
             \") state=double_quote ;;
             \#) break ;;
