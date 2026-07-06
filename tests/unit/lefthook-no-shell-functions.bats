@@ -259,3 +259,69 @@ SH
     assert_failure
     assert_output --partial "noeol.sh:2: shell function definition: function myfunc()"
 }
+
+@test "stderr format includes correct file path for posix-style function" {
+    cat > "$TMP/pathcheck.sh" <<'SH'
+#!/usr/bin/env bash
+myfunc() {
+    echo "hello"
+}
+SH
+    run lefthook-no-shell-functions "$TMP/pathcheck.sh"
+    assert_failure
+    assert_line "$TMP/pathcheck.sh:2: shell function definition: myfunc()"
+}
+
+@test "stderr format includes correct file path for function keyword" {
+    cat > "$TMP/pathcheck.sh" <<'SH'
+#!/usr/bin/env bash
+function myfunc {
+    echo "hello"
+}
+SH
+    run lefthook-no-shell-functions "$TMP/pathcheck.sh"
+    assert_failure
+    assert_line "$TMP/pathcheck.sh:2: shell function definition: function myfunc"
+}
+
+@test "stderr format includes correct file path for function keyword with parens" {
+    cat > "$TMP/pathcheck.sh" <<'SH'
+#!/usr/bin/env bash
+function myfunc() {
+    echo "hello"
+}
+SH
+    run lefthook-no-shell-functions "$TMP/pathcheck.sh"
+    assert_failure
+    assert_line "$TMP/pathcheck.sh:2: shell function definition: function myfunc()"
+}
+
+@test "stderr format includes correct line number for function on line 5" {
+    cat > "$TMP/linecheck.sh" <<'SH'
+#!/usr/bin/env bash
+echo "line 2"
+echo "line 3"
+echo "line 4"
+myfunc() {
+    echo "hello"
+}
+SH
+    run lefthook-no-shell-functions "$TMP/linecheck.sh"
+    assert_failure
+    assert_line "$TMP/linecheck.sh:5: shell function definition: myfunc()"
+}
+
+@test "stderr format includes correct line numbers for multiple violations" {
+    cat > "$TMP/multiline.sh" <<'SH'
+#!/usr/bin/env bash
+echo "line 2"
+foo() { true; }
+echo "line 4"
+echo "line 5"
+bar() { true; }
+SH
+    run lefthook-no-shell-functions "$TMP/multiline.sh"
+    assert_failure
+    assert_line --index 0 "$TMP/multiline.sh:3: shell function definition: foo()"
+    assert_line --index 1 "$TMP/multiline.sh:6: shell function definition: bar()"
+}
