@@ -77,7 +77,7 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 | `x` | T6 | Extract `nix/dev/shell.sh` from `dev.sh` per flake skill for flake modularity |
 | `x` | T7 | Add markdownlint lefthook remote or local command for `.md` files |
 | `x` | T8 | Add test for function definition on the last line without trailing newline |
-| `.` | T9 | Add test verifying stderr output format includes correct file path and line number |
+| `x` | T9 | Add test verifying stderr output format includes correct file path and line number |
 | `.` | T10 | Consider filtering out function-like patterns inside heredocs and quoted strings |
 
 ## §B — Bugs / Known Issues
