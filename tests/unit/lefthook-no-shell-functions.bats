@@ -325,3 +325,172 @@ SH
     assert_line --index 0 "$TMP/multiline.sh:3: shell function definition: foo()"
     assert_line --index 1 "$TMP/multiline.sh:6: shell function definition: bar()"
 }
+
+@test "posix-style function inside unquoted heredoc is not a false positive" {
+    cat > "$TMP/heredoc.sh" <<'OUTER'
+#!/usr/bin/env bash
+cat <<EOF
+myfunc() {
+  echo "hello"
+}
+EOF
+OUTER
+    run lefthook-no-shell-functions "$TMP/heredoc.sh"
+    assert_success
+}
+
+@test "function keyword inside unquoted heredoc is not a false positive" {
+    cat > "$TMP/heredoc.sh" <<'OUTER'
+#!/usr/bin/env bash
+cat <<EOF
+function myfunc {
+  echo "hello"
+}
+EOF
+OUTER
+    run lefthook-no-shell-functions "$TMP/heredoc.sh"
+    assert_success
+}
+
+@test "function keyword with parens inside unquoted heredoc is not a false positive" {
+    cat > "$TMP/heredoc.sh" <<'OUTER'
+#!/usr/bin/env bash
+cat <<EOF
+function myfunc() {
+  echo "hello"
+}
+EOF
+OUTER
+    run lefthook-no-shell-functions "$TMP/heredoc.sh"
+    assert_success
+}
+
+@test "function-like pattern inside single-quoted heredoc is not a false positive" {
+    cat > "$TMP/heredoc.sh" <<'OUTER'
+#!/usr/bin/env bash
+cat <<'EOF'
+myfunc() {
+  echo "hello"
+}
+EOF
+OUTER
+    run lefthook-no-shell-functions "$TMP/heredoc.sh"
+    assert_success
+}
+
+@test "function-like pattern inside double-quoted heredoc is not a false positive" {
+    cat > "$TMP/heredoc.sh" <<'OUTER'
+#!/usr/bin/env bash
+cat <<"EOF"
+myfunc() {
+  echo "hello"
+}
+EOF
+OUTER
+    run lefthook-no-shell-functions "$TMP/heredoc.sh"
+    assert_success
+}
+
+@test "function-like pattern inside tab-stripping heredoc is not a false positive" {
+    printf '#!/usr/bin/env bash\ncat <<-EOF\n\tmyfunc() {\n\t\techo "hello"\n\t}\n\tEOF\n' > "$TMP/heredoc.sh"
+    run lefthook-no-shell-functions "$TMP/heredoc.sh"
+    assert_success
+}
+
+@test "real function after heredoc is still flagged" {
+    cat > "$TMP/heredoc.sh" <<'OUTER'
+#!/usr/bin/env bash
+cat <<EOF
+myfunc() {
+  echo "hello"
+}
+EOF
+real_func() {
+  echo "bad"
+}
+OUTER
+    run lefthook-no-shell-functions "$TMP/heredoc.sh"
+    assert_failure
+    assert_output --partial "real_func()"
+    refute_output --partial "myfunc()"
+}
+
+@test "real function before heredoc is still flagged" {
+    cat > "$TMP/heredoc.sh" <<'OUTER'
+#!/usr/bin/env bash
+real_func() {
+  echo "bad"
+}
+cat <<EOF
+myfunc() {
+  echo "hello"
+}
+EOF
+OUTER
+    run lefthook-no-shell-functions "$TMP/heredoc.sh"
+    assert_failure
+    assert_output --partial "real_func()"
+    refute_output --partial "myfunc()"
+}
+
+@test "function-like pattern inside multi-line double-quoted string is not a false positive" {
+    cat > "$TMP/quote.sh" <<'OUTER'
+#!/usr/bin/env bash
+msg="
+myfunc() {
+  echo hello
+}
+"
+OUTER
+    run lefthook-no-shell-functions "$TMP/quote.sh"
+    assert_success
+}
+
+@test "function-like pattern inside multi-line single-quoted string is not a false positive" {
+    cat > "$TMP/quote.sh" <<'OUTER'
+#!/usr/bin/env bash
+msg='
+myfunc() {
+  echo hello
+}
+'
+OUTER
+    run lefthook-no-shell-functions "$TMP/quote.sh"
+    assert_success
+}
+
+@test "real function after multi-line double-quoted string is still flagged" {
+    cat > "$TMP/quote.sh" <<'OUTER'
+#!/usr/bin/env bash
+msg="
+myfunc() {
+  echo hello
+}
+"
+real_func() {
+  echo "bad"
+}
+OUTER
+    run lefthook-no-shell-functions "$TMP/quote.sh"
+    assert_failure
+    assert_output --partial "real_func()"
+    refute_output --partial "myfunc()"
+}
+
+@test "real function after multi-line single-quoted string is still flagged" {
+    cat > "$TMP/quote.sh" <<'OUTER'
+#!/usr/bin/env bash
+msg='
+myfunc() {
+  echo hello
+}
+'
+real_func() {
+  echo "bad"
+}
+OUTER
+    run lefthook-no-shell-functions "$TMP/quote.sh"
+    assert_failure
+    assert_output --partial "real_func()"
+    refute_output --partial "myfunc()"
+}
