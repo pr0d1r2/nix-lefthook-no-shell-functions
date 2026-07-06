@@ -79,6 +79,10 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 | `x` | T8 | Add test for function definition on the last line without trailing newline |
 | `x` | T9 | Add test verifying stderr output format includes correct file path and line number |
 | `x` | T10 | Consider filtering out function-like patterns inside heredocs and quoted strings |
+| | T13 | Mark §B.2 as fixed in SPEC.md — `.envrc` already contains `watch_file` directives for `flake.nix`, `flake.lock`, and `nix/dev/shell.sh` [§B.2] |
+| | T14 | Add bats test for symlink pre-commit hook detection in `nix/dev/shell.sh` — create symlink at `.git/hooks/pre-commit` pointing to an existing file, verify `lefthook install` is skipped (GREEN, confirms `-f` follows symlinks) [§V.9, §B.5] |
+| | T15 | Fix fragile hook check: add RED bats test for `core.hooksPath` scenario in `nix/dev/shell.sh` then update script to query `git config core.hooksPath` with `.git/hooks` fallback to make it GREEN [§B.5, §V.9] |
+| | T16 | Resolve undifferentiated `ci` devShell: remove the `ci = default` alias from `flake.nix` if it provides no value, or add CI-specific configuration to differentiate it; update §B.4 [§B.4, §V.8] |
 
 ## §B — Bugs / Known Issues
 
