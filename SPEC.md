@@ -2,7 +2,15 @@
 
 ## §D — Description
 
-`nix-lefthook-no-shell-functions` is a Nix-flake-packaged lefthook linter that detects shell function definitions in `.sh` files, enforcing a modularity convention where scripts must delegate to separate scripts invoked in-place rather than contain functions. It scans for POSIX-style (`name()`), keyword-style (`function name`), and combined (`function name()`) declarations, skips `.bats` files (functions are framework primitives there), and exits 0 with no arguments or no matching files. It ships both as a standalone Nix package and as a lefthook remote config, targeting Nix dev environments on Linux and macOS (arm64/x86_64).
+`nix-lefthook-no-shell-functions` is a Nix-flake-packaged lefthook linter that
+detects shell function definitions in `.sh` files, enforcing a modularity
+convention where scripts must delegate to separate scripts invoked in-place
+rather than contain functions. It scans for POSIX-style (`name()`),
+keyword-style (`function name`), and combined (`function name()`) declarations,
+skips `.bats` files (functions are framework primitives there), and exits 0 with
+no arguments or no matching files. It ships both as a standalone Nix package and
+as a lefthook remote config, targeting Nix dev environments on Linux and macOS
+(arm64/x86_64).
 
 ## §V — Invariants
 
@@ -51,17 +59,21 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 
 | File | Format | Purpose |
 | --- | --- | --- |
-| `lefthook.yml` | YAML | Local lefthook config with remote imports and the `no-shell-functions` command |
-| `lefthook-remote.yml` | YAML | Minimal config for consumers using lefthook remote integration |
-| `config/lefthook/file_size_limits.yml` | YAML | Per-extension file size limits (default 4096) |
+| `lefthook.yml` | YAML | Local lefthook config and `no-shell-functions` command |
+| `lefthook-remote.yml` | YAML | Minimal config for lefthook remote consumers |
+| `config/lefthook/file_size_limits.yml` | YAML | Per-extension file size limits |
 | `.envrc` | direnv | Loads the Nix flake dev shell |
-| `.yamllint.yml` | YAML | yamllint config (disables line-length, relaxes truthy) |
-| `.markdownlint.yml` | YAML | markdownlint config (disables MD013 line length) |
-| `.editorconfig` | INI | Editor formatting (UTF-8, LF, 2-space indent, trim trailing) |
+| `.yamllint.yml` | YAML | yamllint config (line-length off, truthy relaxed) |
+| `.markdownlint.yml` | YAML | markdownlint config (`MD013` at 300 chars) |
+| `.editorconfig` | INI | Editor formatting (UTF-8, LF, 2-space, trim) |
 
 ### Lefthook remotes
 
-18 remote linters are imported from `pr0d1r2/nix-lefthook-*`: nixfmt, shellcheck, shfmt, statix, deadnix, nix-no-embedded-shell, bats-parse, bats-unit, yamllint, nix-flake-check, typos, trailing-whitespace, missing-final-newline, git-conflict-markers, editorconfig-checker, git-no-local-paths, file-size-check, markdownlint.
+18 remote linters are imported from `pr0d1r2/nix-lefthook-*`: nixfmt, shellcheck,
+shfmt, statix, deadnix, nix-no-embedded-shell, bats-parse, bats-unit, yamllint,
+nix-flake-check, typos, trailing-whitespace, missing-final-newline,
+git-conflict-markers, editorconfig-checker, git-no-local-paths, file-size-check,
+markdownlint.
 
 ## §T — Tasks
 
@@ -70,8 +82,8 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 | `x` | T1 | Add `watch_file` entries to `.envrc` for `flake.nix`, `flake.lock`, `dev.sh` per direnv skill |
 | `x` | T2 | Add test for mixed-result scenario (some files pass, some fail) |
 | `x` | T3 | Add test for indented function definitions (leading tabs/spaces) |
-| `x` | T11 | Add bats tests confirming comment-prefixed lines (`# myfunc() {`, `# function name {`, indented variants) are not false positives — GREEN against current code [§V.9, §B.1] |
-| `x` | T12 | Correct §B.1 — `#` never matches `FUNC_RE` (requires `[a-zA-Z_]`/`function`); narrow description to heredoc and quoted-string cases only [§B.1] |
+| `x` | T11 | Add bats tests confirming comment-prefixed lines are not false positives [§V.9, §B.1] |
+| `x` | T12 | Correct §B.1 — narrow description to heredoc and quoted-string cases only [§B.1] |
 | `d` | T4 | ~~Add test for function definitions inside comments (should not false-positive, currently does)~~ decomposed → T11, T12 |
 | `x` | T5 | Align `actions/checkout` version in `update-pins.yml` (v4) with `ci.yml` (v6) |
 | `x` | T6 | Extract `nix/dev/shell.sh` from `dev.sh` per flake skill for flake modularity |
@@ -80,26 +92,44 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 | `x` | T9 | Add test verifying stderr format includes correct file path and line number |
 | `x` | T10 | Filter out function-like patterns inside heredocs and quoted strings |
 | | T13 | Mark §B.2 fixed — `.envrc` already watches `flake.nix`, `flake.lock`, `nix/dev/shell.sh` [§B.2] |
-| | T14 | Add bats test for symlink pre-commit hook detection in `nix/dev/shell.sh` — symlink `.git/hooks/pre-commit`, verify `lefthook install` is skipped (confirms `-f` follows symlinks) [§V.9, §B.5] |
-| | T15 | Fix fragile hook check: RED bats test for `core.hooksPath`, then query `git config core.hooksPath` with `.git/hooks` fallback [§B.5, §V.9] |
+| | T14 | Add bats test for symlink pre-commit hook detection in `nix/dev/shell.sh` (confirms `-f` follows symlinks) [§V.9, §B.5] |
+| | T15 | Fix fragile hook check: query `git config core.hooksPath` with `.git/hooks` fallback [§B.5, §V.9] |
 | | T16 | Resolve undifferentiated `ci` devShell: drop the `ci = default` alias or differentiate it; update §B.4 [§B.4, §V.8] |
 
 ## §B — Bugs / Known Issues
 
-1. ~~**False positives on heredocs and quoted strings**: `FUNC_RE` matched function-like lines inside heredoc bodies and multi-line quoted strings.~~ Fixed: a character-by-character state machine tracks heredoc bodies (including `<<-` tab-stripping and quoted/escaped delimiters) and multi-line quoted strings, skipping `FUNC_RE` inside them.
+1. ~~**False positives on heredocs and quoted strings**: `FUNC_RE` matched
+   function-like lines inside heredoc bodies and multi-line quoted strings.~~
+   Fixed: a character-by-character state machine tracks heredoc bodies
+   (including `<<-` tab-stripping and quoted/escaped delimiters) and multi-line
+   quoted strings, skipping `FUNC_RE` inside them.
 
-2. **`.envrc` missing `watch_file` directives**: The `.envrc` contains only `use flake` and does not watch `flake.nix`, `flake.lock`, or `nix/dev/shell.sh`. Changes to these files will not automatically trigger a direnv reload.
+2. **`.envrc` missing `watch_file` directives**: `.envrc` contains only `use flake` and does not watch `flake.nix`, `flake.lock`, or `nix/dev/shell.sh`, so edits to them do not trigger a direnv reload.
 
 3. ~~**Checkout version inconsistency**: `ci.yml` used `@v6` while `update-pins.yml` used `@v4`.~~ Fixed: `update-pins.yml` now uses `@v6`.
 
-4. **`ci` devShell is an undifferentiated alias**: `devShells.<system>.ci` is defined as `ci = default;` with no CI-specific changes, making it a no-op alias that could confuse consumers.
+4. **`ci` devShell is an undifferentiated alias**: `devShells.<system>.ci` is `ci = default;` with no CI-specific changes — a no-op alias that could confuse consumers.
 
-5. **Hook presence check is fragile**: `nix/dev/shell.sh` checks `[ -f .git/hooks/pre-commit ]` to decide whether to run `lefthook install`. If lefthook uses core.hooksPath or the hook file is a symlink, this check may not detect the correct state.
+5. **Hook presence check is fragile**: `nix/dev/shell.sh` checks `[ -f .git/hooks/pre-commit ]` before running `lefthook install`; this misdetects when `core.hooksPath` is set or the hook is a symlink.
 
-6. ~~**No markdownlint in lefthook**: `.markdownlint.yml` existed but no markdownlint linter was configured, violating the linter skill rule.~~ Fixed: markdownlint remote added to `lefthook.yml` and wrapper to `flake.nix`.
+6. ~~**No markdownlint in lefthook**: `.markdownlint.yml` existed but no linter ran, violating the linter skill.~~ Fixed: markdownlint added to `lefthook.yml` with a wrapper in `flake.nix`.
 
-7. ~~**`file-size-check` fails on `SPEC.md`**: `SPEC.md` (6429 bytes) exceeded the default 4096-byte limit (no `md` override defined).~~ Fixed by adding `md: 8192` to `config/lefthook/file_size_limits.yml`. See §B.9 for recurrence.
+7. ~~**`file-size-check` fails on `SPEC.md`**: `SPEC.md` (6429 bytes) exceeded the default 4096-byte limit.~~ Fixed by adding `md: 8192` to `config/lefthook/file_size_limits.yml`. See §B.9 for recurrence.
 
-8. **Orphaned `update-pins.bats` after workflow removal**: The commit that dropped `update-pins.yml` (cron workflow) left its test file `tests/unit/.github/workflows/update-pins.bats` in place, causing 8 CI failures. Fixed by removing the orphaned test file.
+8. **Orphaned `update-pins.bats` after workflow removal**: dropping `update-pins.yml` (cron workflow) left `tests/unit/.github/workflows/update-pins.bats` behind, causing 8 CI failures. Fixed by removing the orphaned test file.
 
-9. ~~**`file-size-check` fails on `SPEC.md` again**: `SPEC.md` grew to 8819 bytes, exceeding the `md: 8192` limit set in §B.7. Recurrence of §B.7 as the spec accreted more §T/§B history.~~ Fixed by condensing verbose §D/§T/§B prose back under the 8192-byte limit rather than raising the threshold, keeping the size check meaningful.
+9. ~~**`file-size-check` fails on `SPEC.md` again**: `SPEC.md` grew to 8819
+   bytes, exceeding the `md: 8192` limit set in §B.7.~~ Fixed by condensing
+   verbose §D/§T/§B prose back under the limit rather than raising the threshold.
+
+10. ~~**`markdownlint` fails on over-long `SPEC.md` lines**: §D/§I/§B prose ran
+    up to 633 chars, over the `MD013` 300-char limit enforced by the regular
+    `markdownlint` check.~~ Fixed by reflowing the paragraphs and list items
+    under 300 chars.
+
+11. ~~**`lefthook-markdownlint-agentic` missing from the flake**: `lefthook.yml`
+    ran it, but `flake.nix` shipped no such wrapper (no input, no
+    `lefthookWrappersFor` entry), so CI failed with `exit 127` (`No such file
+    or directory`).~~ Fixed by adding the `nix-lefthook-markdownlint-agentic`
+    flake input and a wrapper that substitutes the bundled
+    `.markdownlint-agentic.yml` config path.
