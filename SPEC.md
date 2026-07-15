@@ -93,7 +93,7 @@ checks. See §B.12 for the wrappers not currently wired into `lefthook.yml`.
 | `x` | T14 | Test symlink pre-commit hook detection in `nix/dev/shell.sh` [§V.9] |
 | `x` | T15 | Respect `core.hooksPath` with a `.git/hooks` fallback [§V.9] |
 | `x` | T16 | Differentiate the `ci` devShell by removing interactive hook setup [§V.8] |
-| | T17 | Wire every packaged linter into pre-commit and pre-push [§V.13, §B.12] |
+| | T17 | HUMAN-GATED — do NOT hand-wire the vendored `lefthook.yml`; superseded by vendored→referenced migration (set-and-setting materialization, issue #30). The content-aware standard lefthook wires every applicable linter, resolving §B.12 wholesale [§V.13, §B.12] |
 
 ## §B — Bugs / Known Issues
 
@@ -139,4 +139,7 @@ checks. See §B.12 for the wrappers not currently wired into `lefthook.yml`.
 12. **Packaged linters are not wired into lefthook**: `lefthook.yml` currently
     runs only Markdown and YAML checks. Other tracked file types therefore lack
     pre-commit and pre-push checks, violating §V.13, even though most wrapper
-    binaries are already present in the dev shell.
+    binaries are already present in the dev shell. **Resolution: migrate
+    vendored→referenced (set-and-setting materialization, issue #30) — the
+    content-aware standard lefthook wires every applicable linter. Do NOT
+    hand-wire the vendored `lefthook.yml` (throwaway); T17 is HUMAN-GATED.**
