@@ -46,6 +46,34 @@ teardown() {
 
 @test "skips lefthook install when hooks exist" {
     cd "$TMPDIR/repo"
+    # shellcheck disable=SC2030,SC2031
+    export PATH="$TMPDIR/bin:$PATH"
+    # shellcheck disable=SC2030,SC2031
+    export LEFTHOOK_LOG="$TMPDIR/log"
+    # shellcheck disable=SC1091
+    source "$TMPDIR/shell.sh"
+    assert [ ! -f "$LEFTHOOK_LOG" ]
+}
+
+@test "skips lefthook install when the hook is a symlink" {
+    cd "$TMPDIR/repo"
+    rm "$TMPDIR/repo/.git/hooks/pre-commit"
+    touch "$TMPDIR/pre-commit"
+    ln -s "$TMPDIR/pre-commit" "$TMPDIR/repo/.git/hooks/pre-commit"
+    # shellcheck disable=SC2030,SC2031
+    export PATH="$TMPDIR/bin:$PATH"
+    # shellcheck disable=SC2030,SC2031
+    export LEFTHOOK_LOG="$TMPDIR/log"
+    # shellcheck disable=SC1091
+    source "$TMPDIR/shell.sh"
+    assert [ ! -f "$LEFTHOOK_LOG" ]
+}
+
+@test "respects a custom core.hooksPath" {
+    cd "$TMPDIR/repo"
+    mkdir "$TMPDIR/repo/custom-hooks"
+    touch "$TMPDIR/repo/custom-hooks/pre-commit"
+    git config core.hooksPath custom-hooks
     # shellcheck disable=SC2031
     export PATH="$TMPDIR/bin:$PATH"
     # shellcheck disable=SC2031

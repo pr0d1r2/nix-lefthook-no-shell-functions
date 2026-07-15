@@ -5,20 +5,23 @@ setup() {
     load "${BATS_LIB_PATH}/bats-assert/load.bash"
 }
 
-@test "lefthook.yml contains markdownlint remote" {
-    run grep -A2 "nix-lefthook-markdownlint" lefthook.yml
+@test "lefthook.yml runs markdownlint for staged Markdown files" {
+    run grep -A4 "markdownlint:" lefthook.yml
     assert_success
-    assert_output --partial "git_url: https://github.com/pr0d1r2/nix-lefthook-markdownlint"
+    assert_output --partial 'glob: "*.md"'
+    assert_output --partial "lefthook-markdownlint {staged_files}"
 }
 
-@test "lefthook.yml markdownlint remote uses main branch" {
-    run grep -A3 "nix-lefthook-markdownlint" lefthook.yml
+@test "lefthook.yml runs markdownlint for pushed Markdown files" {
+    run grep -A20 "pre-push:" lefthook.yml
     assert_success
-    assert_output --partial "ref: main"
+    assert_output --partial 'glob: "*.md"'
+    assert_output --partial "lefthook-markdownlint {push_files}"
 }
 
-@test "lefthook.yml markdownlint remote loads lefthook-remote.yml" {
-    run grep -A5 "nix-lefthook-markdownlint" lefthook.yml
+@test "lefthook.yml applies configurable timeouts to markdownlint" {
+    run grep "lefthook-markdownlint " lefthook.yml
     assert_success
-    assert_output --partial "lefthook-remote.yml"
+    assert_line --index 0 --partial 'timeout ${LEFTHOOK_MARKDOWNLINT_TIMEOUT:-30}'
+    assert_line --index 1 --partial 'timeout ${LEFTHOOK_MARKDOWNLINT_TIMEOUT:-30}'
 }
