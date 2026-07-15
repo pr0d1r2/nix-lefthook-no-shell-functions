@@ -1,3 +1,5 @@
 # shellcheck shell=bash
 export BATS_LIB_PATH="@BATS_LIB_PATH@/share/bats"
-[ -f .git/hooks/pre-commit ] || lefthook install
+hooks_path="$(git config --path core.hooksPath 2>/dev/null || true)"
+[ -n "$hooks_path" ] || hooks_path=".git/hooks"
+[ -f "$hooks_path/pre-commit" ] || lefthook install
