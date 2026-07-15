@@ -9,6 +9,9 @@ setup() {
     mkdir -p "$TMPDIR/repo/.git/hooks"
     touch "$TMPDIR/repo/.git/hooks/pre-commit"
 
+    mkdir -p "$TMPDIR/repo/scripts"
+    cp scripts/materialize-lefthook.sh "$TMPDIR/repo/scripts/"
+
     sed 's|@BATS_LIB_PATH@|/test/lib|' nix/dev/shell.sh > "$TMPDIR/shell.sh"
 
     mkdir -p "$TMPDIR/bin"
@@ -81,4 +84,14 @@ teardown() {
     # shellcheck disable=SC1091
     source "$TMPDIR/shell.sh"
     assert [ ! -f "$LEFTHOOK_LOG" ]
+}
+
+@test "materializes lefthook.yml during shell setup" {
+    cd "$TMPDIR/repo"
+    assert [ ! -f lefthook.yml ]
+    # shellcheck disable=SC2031
+    export PATH="$TMPDIR/bin:$PATH"
+    # shellcheck disable=SC1091
+    source "$TMPDIR/shell.sh"
+    assert [ -f lefthook.yml ]
 }
