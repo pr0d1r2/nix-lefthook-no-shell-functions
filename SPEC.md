@@ -46,7 +46,7 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 | --- | --- |
 | `packages.<system>.default` | `writeShellApplication` wrapping `lefthook-no-shell-functions.sh` |
 | `devShells.<system>.default` | Dev shell with the tool, bats, lefthook, and all remote linter wrappers |
-| `devShells.<system>.ci` | Alias for `default` |
+| `devShells.<system>.ci` | CI shell with the default toolset and no interactive shell hook |
 
 ### Environment variables
 
@@ -67,13 +67,11 @@ lefthook-no-shell-functions [file1.sh file2.sh ...]
 | `.markdownlint.yml` | YAML | markdownlint config (`MD013` at 300 chars) |
 | `.editorconfig` | INI | Editor formatting (UTF-8, LF, 2-space, trim) |
 
-### Lefthook remotes
+### Lefthook linters
 
-18 remote linters are imported from `pr0d1r2/nix-lefthook-*`: nixfmt, shellcheck,
-shfmt, statix, deadnix, nix-no-embedded-shell, bats-parse, bats-unit, yamllint,
-nix-flake-check, typos, trailing-whitespace, missing-final-newline,
-git-conflict-markers, editorconfig-checker, git-no-local-paths, file-size-check,
-markdownlint.
+The dev shell packages wrapper binaries from `pr0d1r2/nix-lefthook-*` for bats,
+Nix, shell, Markdown, YAML, spelling, whitespace, Git, EditorConfig, and file-size
+checks. See §B.12 for the wrappers not currently wired into `lefthook.yml`.
 
 ## §T — Tasks
 
@@ -91,10 +89,11 @@ markdownlint.
 | `x` | T8 | Add test for function definition on the last line without trailing newline |
 | `x` | T9 | Add test verifying stderr format includes correct file path and line number |
 | `x` | T10 | Filter out function-like patterns inside heredocs and quoted strings |
-| | T13 | Mark §B.2 fixed — `.envrc` already watches `flake.nix`, `flake.lock`, `nix/dev/shell.sh` [§B.2] |
-| | T14 | Add bats test for symlink pre-commit hook detection in `nix/dev/shell.sh` (confirms `-f` follows symlinks) [§V.9, §B.5] |
-| | T15 | Fix fragile hook check: query `git config core.hooksPath` with `.git/hooks` fallback [§B.5, §V.9] |
-| | T16 | Resolve undifferentiated `ci` devShell: drop the `ci = default` alias or differentiate it; update §B.4 [§B.4, §V.8] |
+| `x` | T13 | Mark §B.2 fixed — `.envrc` watches all three dev-shell inputs |
+| `x` | T14 | Test symlink pre-commit hook detection in `nix/dev/shell.sh` [§V.9] |
+| `x` | T15 | Respect `core.hooksPath` with a `.git/hooks` fallback [§V.9] |
+| `x` | T16 | Differentiate the `ci` devShell by removing interactive hook setup [§V.8] |
+| | T17 | Wire every packaged linter into pre-commit and pre-push [§V.13, §B.12] |
 
 ## §B — Bugs / Known Issues
 
@@ -104,13 +103,16 @@ markdownlint.
    (including `<<-` tab-stripping and quoted/escaped delimiters) and multi-line
    quoted strings, skipping `FUNC_RE` inside them.
 
-2. **`.envrc` missing `watch_file` directives**: `.envrc` contains only `use flake` and does not watch `flake.nix`, `flake.lock`, or `nix/dev/shell.sh`, so edits to them do not trigger a direnv reload.
+2. ~~**`.envrc` missing `watch_file` directives**.~~ Fixed: it watches
+   `flake.nix`, `flake.lock`, and `nix/dev/shell.sh`.
 
 3. ~~**Checkout version inconsistency**: `ci.yml` used `@v6` while `update-pins.yml` used `@v4`.~~ Fixed: `update-pins.yml` now uses `@v6`.
 
-4. **`ci` devShell is an undifferentiated alias**: `devShells.<system>.ci` is `ci = default;` with no CI-specific changes — a no-op alias that could confuse consumers.
+4. ~~**`ci` devShell was an undifferentiated alias**.~~ Fixed: it retains the
+   default toolset without the interactive shell hook.
 
-5. **Hook presence check is fragile**: `nix/dev/shell.sh` checks `[ -f .git/hooks/pre-commit ]` before running `lefthook install`; this misdetects when `core.hooksPath` is set or the hook is a symlink.
+5. ~~**Hook presence check was fragile**.~~ Fixed: it respects
+   `core.hooksPath`, falls back to `.git/hooks`, and follows hook symlinks.
 
 6. ~~**No markdownlint in lefthook**: `.markdownlint.yml` existed but no linter ran, violating the linter skill.~~ Fixed: markdownlint added to `lefthook.yml` with a wrapper in `flake.nix`.
 
@@ -133,3 +135,8 @@ markdownlint.
     or directory`).~~ Fixed by adding the `nix-lefthook-markdownlint-agentic`
     flake input and a wrapper that substitutes the bundled
     `.markdownlint-agentic.yml` config path.
+
+12. **Packaged linters are not wired into lefthook**: `lefthook.yml` currently
+    runs only Markdown and YAML checks. Other tracked file types therefore lack
+    pre-commit and pre-push checks, violating §V.13, even though most wrapper
+    binaries are already present in the dev shell.
