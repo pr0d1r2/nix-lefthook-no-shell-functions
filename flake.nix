@@ -168,8 +168,12 @@
           (wrap "lefthook-git-no-local-paths" nix-lefthook-git-no-local-paths-src {
             runtimeInputs = [ pkgs.gnugrep ];
           })
+          (wrap "is-markdown-agentic" nix-lefthook-markdownlint-src { })
           (wrap "lefthook-markdownlint" nix-lefthook-markdownlint-src {
-            runtimeInputs = [ pkgs.markdownlint-cli ];
+            runtimeInputs = [
+              pkgs.markdownlint-cli
+              (wrap "is-markdown-agentic" nix-lefthook-markdownlint-src { })
+            ];
           })
           (pkgs.writeShellApplication {
             name = "lefthook-markdownlint-agentic";
