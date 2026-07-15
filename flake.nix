@@ -247,7 +247,9 @@
               builtins.readFile ./nix/dev/shell.sh
             );
           };
-          ci = default;
+          ci = default.overrideAttrs (_: {
+            shellHook = "";
+          });
         }
       );
     };
