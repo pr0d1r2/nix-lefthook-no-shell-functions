@@ -46,3 +46,12 @@ teardown() {
     run grep -x "nix/dev/shell.sh" "$WATCH_LOG"
     assert_success
 }
+
+@test "watches scripts/materialize-lefthook.sh for changes" {
+    # shellcheck disable=SC2031
+    export PATH="$TMPDIR/bin:$PATH"
+    run bash "$TMPDIR/.envrc"
+    assert_success
+    run grep -x "scripts/materialize-lefthook.sh" "$WATCH_LOG"
+    assert_success
+}
