@@ -21,11 +21,6 @@
       set-and-setting,
       ...
     }:
-    let
-      forAllSystems =
-        f: nixpkgs.lib.genAttrs supportedSystems (system: f nixpkgs.legacyPackages.${system});
-          batsWithLibs = batsWithLibsFor pkgs;
-    in
     set-and-setting.lib.mkConsumerFlake {
       inherit self nixpkgs set-and-setting;
       fragments = [
@@ -38,36 +33,10 @@
         "yaml"
       ];
       extraPackages = pkgs: {
-          default = pkgs.writeShellApplication {
-            name = "lefthook-no-shell-functions";
-            text = builtins.readFile ./lefthook-no-shell-functions.sh;
-          };
-        devShells = forAllSystems (
-          pkgs:
-          let
-            inherit (pkgs.stdenv.hostPlatform) system;
-            batsWithLibs = batsWithLibsFor pkgs;
-          in
-          rec {
-            default = pkgs.mkShell {
-                self.packages.${system}.default
-                batsWithLibs
-                pkgs.coreutils
-                pkgs.git
-                pkgs.lefthook
-                pkgs.nix
-                pkgs.parallel
-              ]
-              ++ (lefthookWrappersFor pkgs);
-              shellHook = builtins.replaceStrings [ "@BATS_LIB_PATH@" ] [ "${batsWithLibs}" ] (
-                builtins.readFile ./nix/dev/shell.sh
-              );
-            };
-            ci = default.overrideAttrs (_: {
-              shellHook = "";
-            });
-          }
-        );
+        default = pkgs.writeShellApplication {
+          name = "lefthook-no-shell-functions";
+          text = builtins.readFile ./lefthook-no-shell-functions.sh;
+        };
       };
       src = ./.;
     };

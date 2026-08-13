@@ -124,3 +124,6 @@ content-aware — only linters whose file types are tracked appear in the config
 
 12. ~~**Packaged linters not wired**.~~ Fixed: `lefthook.yml` is now
     materialized on demand by `scripts/materialize-lefthook.sh` (issue #30).
+
+13. **Malformed `flake.nix`**. Fixed: corrected the package/devShell attribute
+    structure and removed the invalid binding.
