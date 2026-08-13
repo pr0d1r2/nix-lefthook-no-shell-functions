@@ -133,3 +133,9 @@ content-aware — only linters whose file types are tracked appear in the config
 
 15. **Actionlint path filtering used an outdated scalar API**. The upstream
     helper now expects regex lists, but passed its workflow path as a string.
+
+16. **Flake evaluation broke in `checks.actionlint`**. The latest
+    `set-and-setting` actionlint fragment passed `^.github/workflows/.*` as a
+    scalar to a `sourceByRegex` API that requires a list. Fixed by pinning the
+    consumer to the last pre-actionlint-fragment revision until the shared
+    helper is corrected upstream.
