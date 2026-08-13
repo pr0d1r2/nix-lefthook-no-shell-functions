@@ -125,5 +125,11 @@ content-aware — only linters whose file types are tracked appear in the config
 12. ~~**Packaged linters not wired**.~~ Fixed: `lefthook.yml` is now
     materialized on demand by `scripts/materialize-lefthook.sh` (issue #30).
 
-13. **Malformed `flake.nix`**. Fixed: corrected the package/devShell attribute
-    structure and removed the invalid binding.
+13. ~~**Malformed `flake.nix`**.~~ Fixed: corrected the package/devShell
+    attribute structure and removed the invalid binding.
+
+14. ~~**Lefthook excludes had the wrong YAML type**.~~ Fixed: `exclude` is now
+    emitted as a list, as required by the guardrails schema.
+
+15. **Actionlint path filtering used an outdated scalar API**. The upstream
+    helper now expects regex lists, but passed its workflow path as a string.

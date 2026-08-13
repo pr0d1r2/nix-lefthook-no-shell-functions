@@ -49,11 +49,13 @@ if [ -n "$has_md" ]; then
   cat >> "$tmp" <<'YAML'
     markdownlint:
       glob: "*.md"
-      exclude: "^(\\.claude/skills/)"
+      exclude:
+        - "^(\\.claude/skills/)"
       run: timeout ${LEFTHOOK_MARKDOWNLINT_TIMEOUT:-30} lefthook-markdownlint {staged_files}
     markdownlint-agentic:
       glob: "*.md"
-      exclude: "^(README|CHANGELOG|SPEC|CONTRIBUTING)\\.md$"
+      exclude:
+        - "^(README|CHANGELOG|SPEC|CONTRIBUTING)\\.md$"
       run: timeout ${LEFTHOOK_MARKDOWNLINT_AGENTIC_TIMEOUT:-30} lefthook-markdownlint-agentic {staged_files}
 YAML
 fi
@@ -149,11 +151,13 @@ if [ -n "$has_md" ]; then
   cat >> "$tmp" <<'YAML'
     markdownlint:
       glob: "*.md"
-      exclude: "^(\\.claude/skills/)"
+      exclude:
+        - "^(\\.claude/skills/)"
       run: timeout ${LEFTHOOK_MARKDOWNLINT_TIMEOUT:-30} lefthook-markdownlint {push_files}
     markdownlint-agentic:
       glob: "*.md"
-      exclude: "^(README|CHANGELOG|SPEC|CONTRIBUTING)\\.md$"
+      exclude:
+        - "^(README|CHANGELOG|SPEC|CONTRIBUTING)\\.md$"
       run: timeout ${LEFTHOOK_MARKDOWNLINT_AGENTIC_TIMEOUT:-30} lefthook-markdownlint-agentic {push_files}
 YAML
 fi
