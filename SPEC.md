@@ -139,3 +139,7 @@ content-aware — only linters whose file types are tracked appear in the config
     scalar to a `sourceByRegex` API that requires a list. Fixed by pinning the
     consumer to the last pre-actionlint-fragment revision until the shared
     helper is corrected upstream.
+
+17. **`file-size-check` rejected the materialization script**. The new
+    `scripts/materialize-lefthook.sh` exceeded the generic 4096-byte shell
+    limit. Fixed by setting the explicit `.sh` limit to 8192 bytes.
