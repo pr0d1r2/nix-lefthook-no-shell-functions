@@ -1,6 +1,7 @@
 ---
 default: 4096
 extensions:
+  sh: 8192
   lock: 65536
   md: 8192
   nix: 10240
