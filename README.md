@@ -63,14 +63,14 @@ The repo includes an `.envrc` for [direnv](https://direnv.net/) — entering the
 
 ```bash
 cd nix-lefthook-no-shell-functions  # direnv loads the flake
-bats tests/unit/
+lefthook-bats-unit tests/unit/
 ```
 
 If not using direnv, enter the shell manually:
 
 ```bash
 nix develop
-bats tests/unit/
+lefthook-bats-unit tests/unit/
 ```
 
 ## License
