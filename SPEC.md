@@ -131,24 +131,13 @@ content-aware — only linters whose file types are tracked appear in the config
 14. ~~**Lefthook excludes had the wrong YAML type**.~~ Fixed: `exclude` is now
     emitted as a list, as required by the guardrails schema.
 
-15. **Actionlint path filtering used an outdated scalar API**. The upstream
-    helper now expects regex lists, but passed its workflow path as a string.
+15. **Actionlint API mismatch**. Fixed: pinned upstream helper.
 
-16. **Flake evaluation broke in `checks.actionlint`**. The latest
-    `set-and-setting` actionlint fragment passed `^.github/workflows/.*` as a
-    scalar to a `sourceByRegex` API that requires a list. Fixed by pinning the
-    consumer to the last pre-actionlint-fragment revision until the shared
-    helper is corrected upstream.
+16. ~~**Flake evaluation broke in `checks.actionlint`**.~~ Fixed.
 
-17. **`file-size-check` rejected the materialization script**. The new
-    `scripts/materialize-lefthook.sh` exceeded the generic 4096-byte shell
-    limit. Fixed by setting the explicit `.sh` limit to 8192 bytes.
+17. ~~**`file-size-check` rejected materialization script**.~~ Fixed:
+    set `.sh` limit to 8192 bytes.
 
-18. **Unsupported `actions` fragment**. Fixed by removing the fragment from
-    the consumer flake; it is not available in the pinned helper revision.
+18. ~~**Unsupported `actions` fragment**.~~ Fixed: removed.
 
-19. ~~**Bats tests clobber `TMPDIR`**.~~ Fixed: `envrc.bats` and
-    `nix/dev/shell.bats` used `TMPDIR` as a test-local variable; if
-    `setup()` failed before the assignment, `teardown()` deleted the nix
-    shell's temp directory (including the bats run directory), causing
-    `setup_file failed` cascading failures. Renamed to `TEST_DIR`.
+19. ~~**Bats tests clobber `TMPDIR`**.~~ Fixed: renamed to `TEST_DIR`.
