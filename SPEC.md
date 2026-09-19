@@ -146,3 +146,9 @@ content-aware — only linters whose file types are tracked appear in the config
 
 18. **Unsupported `actions` fragment**. Fixed by removing the fragment from
     the consumer flake; it is not available in the pinned helper revision.
+
+19. ~~**Bats tests clobber `TMPDIR`**.~~ Fixed: `envrc.bats` and
+    `nix/dev/shell.bats` used `TMPDIR` as a test-local variable; if
+    `setup()` failed before the assignment, `teardown()` deleted the nix
+    shell's temp directory (including the bats run directory), causing
+    `setup_file failed` cascading failures. Renamed to `TEST_DIR`.
