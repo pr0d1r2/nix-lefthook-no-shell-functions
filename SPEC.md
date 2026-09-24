@@ -133,6 +133,9 @@ content-aware — only linters whose file types are tracked appear in the config
 
 15. **Actionlint API mismatch**. Fixed: pinned upstream helper.
 
+16. **Bats libraries not found when `BATS_LIB_PATH` is unset**. Fixed: test
+    setup derives the library root from the `bats` executable.
+
 16. ~~**Flake evaluation broke in `checks.actionlint`**.~~ Fixed.
 
 17. ~~**`file-size-check` rejected materialization script**.~~ Fixed:
