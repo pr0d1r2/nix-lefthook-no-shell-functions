@@ -143,4 +143,7 @@ content-aware — only linters whose file types are tracked appear in the config
 
 19. ~~**Unsupported `actions` fragment**.~~ Fixed: removed.
 
+20. **Bats unavailable in the dev shell**. Fixed: expose `pkgs.bats` so the
+    guardrails can run the unit-test suite.
+
 20. ~~**Bats tests clobber `TMPDIR`**.~~ Fixed: renamed to `TEST_DIR`.

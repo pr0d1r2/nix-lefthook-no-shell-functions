@@ -36,6 +36,10 @@
         "yaml"
       ];
       extraPackages = pkgs: {
+        # The guardrails run the repository's Bats suite from the dev shell.
+        # Keep the test runner available alongside the lefthook wrappers;
+        # otherwise every test fails during setup before its assertions run.
+        inherit (pkgs) bats;
         default = pkgs.writeShellApplication {
           name = "lefthook-no-shell-functions";
           text = builtins.readFile ./lefthook-no-shell-functions.sh;
