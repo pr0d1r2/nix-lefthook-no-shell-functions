@@ -146,4 +146,4 @@ content-aware — only linters whose file types are tracked appear in the config
 20. **Bats unavailable in the dev shell**. Fixed: expose `pkgs.bats` so the
     guardrails can run the unit-test suite.
 
-20. ~~**Bats tests clobber `TMPDIR`**.~~ Fixed: renamed to `TEST_DIR`.
+21. ~~**Bats tests clobber `TMPDIR`**.~~ Fixed: renamed to `TEST_DIR`.
