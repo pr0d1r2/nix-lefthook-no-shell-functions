@@ -155,6 +155,5 @@ content-aware — only linters whose file types are tracked appear in the config
     the library-enabled Bats package in the default package alongside the
     lefthook wrapper.
 
-24. **Flake description retained the `CHANGEME` placeholder**. Fixed: set the
-    description to the project's actual purpose so metadata guardrails do not
-    reject the flake.
+24. **Flake description was `CHANGEME`**. Fixed: set the actual project purpose
+    so metadata guardrails accept the flake.
