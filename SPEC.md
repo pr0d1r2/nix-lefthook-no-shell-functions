@@ -157,3 +157,5 @@ content-aware — only linters whose file types are tracked appear in the config
 
 24. **Flake description was `CHANGEME`**. Fixed: set the actual project purpose
     so metadata guardrails accept the flake.
+
+25. Bats: derive libs.
