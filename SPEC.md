@@ -150,3 +150,7 @@ content-aware — only linters whose file types are tracked appear in the config
 
 22. **Bats libraries unavailable in guardrails**. Fixed: expose Bats with its
     support libraries and load them through `bats_load_library`.
+
+23. **Bats executable unavailable in the guardrails dev shell**. Fixed: include
+    the library-enabled Bats package in the default package alongside the
+    lefthook wrapper.

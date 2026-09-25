@@ -35,18 +35,22 @@
         "markdown"
         "yaml"
       ];
-      extraPackages = pkgs: {
-        # The guardrails run the repository's Bats suite from the dev shell.
-        # Keep the test runner available alongside the lefthook wrappers;
-        # otherwise every test fails during setup before its assertions run.
-        bats = pkgs.bats.withLibraries (p: [
-          p.bats-support
-          p.bats-assert
-          p.bats-file
-        ]);
-        default = pkgs.writeShellApplication {
+      extraPackages = pkgs:
+        let
+          bats = pkgs.bats.withLibraries (p: [
+            p.bats-support
+            p.bats-assert
+            p.bats-file
+          ]);
+          wrapper = pkgs.writeShellApplication {
+            name = "lefthook-no-shell-functions";
+            text = builtins.readFile ./lefthook-no-shell-functions.sh;
+          };
+        in {
+        bats = bats;
+        default = pkgs.symlinkJoin {
           name = "lefthook-no-shell-functions";
-          text = builtins.readFile ./lefthook-no-shell-functions.sh;
+          paths = [ bats wrapper ];
         };
       };
       src = ./.;
