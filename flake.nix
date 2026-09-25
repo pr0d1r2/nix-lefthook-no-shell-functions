@@ -39,7 +39,11 @@
         # The guardrails run the repository's Bats suite from the dev shell.
         # Keep the test runner available alongside the lefthook wrappers;
         # otherwise every test fails during setup before its assertions run.
-        inherit (pkgs) bats;
+        bats = pkgs.bats.withLibraries (p: [
+          p.bats-support
+          p.bats-assert
+          p.bats-file
+        ]);
         default = pkgs.writeShellApplication {
           name = "lefthook-no-shell-functions";
           text = builtins.readFile ./lefthook-no-shell-functions.sh;

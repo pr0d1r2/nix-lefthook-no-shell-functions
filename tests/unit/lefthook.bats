@@ -1,9 +1,8 @@
 #!/usr/bin/env bats
 
 setup() {
-    BATS_LIB_PATH="${BATS_LIB_PATH:-$(dirname "$(dirname "$(command -v bats)")")/share/bats}"
-    load "${BATS_LIB_PATH}/bats-support/load.bash"
-    load "${BATS_LIB_PATH}/bats-assert/load.bash"
+    bats_load_library bats-support
+    bats_load_library bats-assert
 
     run bash scripts/materialize-lefthook.sh
     assert_success

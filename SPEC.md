@@ -147,3 +147,6 @@ content-aware — only linters whose file types are tracked appear in the config
     guardrails can run the unit-test suite.
 
 21. ~~**Bats tests clobber `TMPDIR`**.~~ Fixed: renamed to `TEST_DIR`.
+
+22. **Bats libraries unavailable in guardrails**. Fixed: expose Bats with its
+    support libraries and load them through `bats_load_library`.
