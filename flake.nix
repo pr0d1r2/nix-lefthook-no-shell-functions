@@ -35,24 +35,32 @@
         "markdown"
         "yaml"
       ];
-      extraPackages = pkgs:
-        let
-          bats = pkgs.bats.withLibraries (p: [
-            p.bats-support
-            p.bats-assert
-            p.bats-file
-          ]);
-          wrapper = pkgs.writeShellApplication {
-            name = "lefthook-no-shell-functions";
-            text = builtins.readFile ./lefthook-no-shell-functions.sh;
+      extraPackages =
+        pkgs:
+        (
+          { bats, wrapper }:
+          {
+            inherit bats;
+            default = pkgs.symlinkJoin {
+              name = "lefthook-no-shell-functions";
+              paths = [
+                bats
+                wrapper
+              ];
+            };
+          }
+        )
+          {
+            bats = pkgs.bats.withLibraries (p: [
+              p.bats-support
+              p.bats-assert
+              p.bats-file
+            ]);
+            wrapper = pkgs.writeShellApplication {
+              name = "lefthook-no-shell-functions";
+              text = builtins.readFile ./lefthook-no-shell-functions.sh;
+            };
           };
-        in {
-        bats = bats;
-        default = pkgs.symlinkJoin {
-          name = "lefthook-no-shell-functions";
-          paths = [ bats wrapper ];
-        };
-      };
       src = ./.;
     };
 }
