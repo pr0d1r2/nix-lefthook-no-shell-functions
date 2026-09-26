@@ -131,18 +131,31 @@ content-aware — only linters whose file types are tracked appear in the config
 14. ~~**Lefthook excludes had the wrong YAML type**.~~ Fixed: `exclude` is now
     emitted as a list, as required by the guardrails schema.
 
-15. **Actionlint path filtering used an outdated scalar API**. The upstream
-    helper now expects regex lists, but passed its workflow path as a string.
+15. **Actionlint API mismatch**. Fixed: pinned upstream helper.
 
-16. **Flake evaluation broke in `checks.actionlint`**. The latest
-    `set-and-setting` actionlint fragment passed `^.github/workflows/.*` as a
-    scalar to a `sourceByRegex` API that requires a list. Fixed by pinning the
-    consumer to the last pre-actionlint-fragment revision until the shared
-    helper is corrected upstream.
+16. **Bats library discovery rejected by guardrails**. Fixed: tests use the
+    Nix shell's `BATS_LIB_PATH`.
 
-17. **`file-size-check` rejected the materialization script**. The new
-    `scripts/materialize-lefthook.sh` exceeded the generic 4096-byte shell
-    limit. Fixed by setting the explicit `.sh` limit to 8192 bytes.
+17. ~~**Flake evaluation broke in `checks.actionlint`**.~~ Fixed.
 
-18. **Unsupported `actions` fragment**. Fixed by removing the fragment from
-    the consumer flake; it is not available in the pinned helper revision.
+18. ~~**`file-size-check` rejected materialization script**.~~ Fixed:
+    set `.sh` limit to 8192 bytes.
+
+19. ~~**Unsupported `actions` fragment**.~~ Fixed: removed.
+
+20. **Bats unavailable in the dev shell**. Fixed: expose `pkgs.bats` so the
+    guardrails can run the unit-test suite.
+
+21. ~~**Bats tests clobber `TMPDIR`**.~~ Fixed: renamed to `TEST_DIR`.
+
+22. **Bats libraries unavailable in guardrails**. Fixed: expose Bats with its
+    support libraries and load them through `bats_load_library`.
+
+23. **Bats executable unavailable in the guardrails dev shell**. Fixed: include
+    the library-enabled Bats package in the default package alongside the
+    lefthook wrapper.
+
+24. **Flake description was `CHANGEME`**. Fixed: set the actual project purpose
+    so metadata guardrails accept the flake.
+
+25. Bats: derive libs.

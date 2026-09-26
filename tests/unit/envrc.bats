@@ -1,29 +1,29 @@
 #!/usr/bin/env bats
 
 setup() {
-    load "${BATS_LIB_PATH}/bats-support/load.bash"
-    load "${BATS_LIB_PATH}/bats-assert/load.bash"
+    bats_load_library bats-support
+    bats_load_library bats-assert
 
-    TMPDIR="$(mktemp -d)"
-    cp .envrc "$TMPDIR/.envrc"
-    export WATCH_LOG="$TMPDIR/watch_log"
+    TEST_DIR="$(mktemp -d)"
+    cp .envrc "$TEST_DIR/.envrc"
+    export WATCH_LOG="$TEST_DIR/watch_log"
 
-    mkdir -p "$TMPDIR/bin"
-    printf '#!/usr/bin/env bash\n:\n' > "$TMPDIR/bin/use"
-    chmod +x "$TMPDIR/bin/use"
+    mkdir -p "$TEST_DIR/bin"
+    printf '#!/usr/bin/env bash\n:\n' > "$TEST_DIR/bin/use"
+    chmod +x "$TEST_DIR/bin/use"
     # shellcheck disable=SC2016
-    printf '#!/usr/bin/env bash\necho "$1" >> "$WATCH_LOG"\n' > "$TMPDIR/bin/watch_file"
-    chmod +x "$TMPDIR/bin/watch_file"
+    printf '#!/usr/bin/env bash\necho "$1" >> "$WATCH_LOG"\n' > "$TEST_DIR/bin/watch_file"
+    chmod +x "$TEST_DIR/bin/watch_file"
 }
 
 teardown() {
-    rm -rf "$TMPDIR"
+    rm -rf "$TEST_DIR"
 }
 
 @test "watches flake.nix for changes" {
     # shellcheck disable=SC2030
-    export PATH="$TMPDIR/bin:$PATH"
-    run bash "$TMPDIR/.envrc"
+    export PATH="$TEST_DIR/bin:$PATH"
+    run bash "$TEST_DIR/.envrc"
     assert_success
     run grep -x "flake.nix" "$WATCH_LOG"
     assert_success
@@ -31,8 +31,8 @@ teardown() {
 
 @test "watches flake.lock for changes" {
     # shellcheck disable=SC2030,SC2031
-    export PATH="$TMPDIR/bin:$PATH"
-    run bash "$TMPDIR/.envrc"
+    export PATH="$TEST_DIR/bin:$PATH"
+    run bash "$TEST_DIR/.envrc"
     assert_success
     run grep -x "flake.lock" "$WATCH_LOG"
     assert_success
@@ -40,8 +40,8 @@ teardown() {
 
 @test "watches nix/dev/shell.sh for changes" {
     # shellcheck disable=SC2031
-    export PATH="$TMPDIR/bin:$PATH"
-    run bash "$TMPDIR/.envrc"
+    export PATH="$TEST_DIR/bin:$PATH"
+    run bash "$TEST_DIR/.envrc"
     assert_success
     run grep -x "nix/dev/shell.sh" "$WATCH_LOG"
     assert_success
@@ -49,8 +49,8 @@ teardown() {
 
 @test "watches scripts/materialize-lefthook.sh for changes" {
     # shellcheck disable=SC2031
-    export PATH="$TMPDIR/bin:$PATH"
-    run bash "$TMPDIR/.envrc"
+    export PATH="$TEST_DIR/bin:$PATH"
+    run bash "$TEST_DIR/.envrc"
     assert_success
     run grep -x "scripts/materialize-lefthook.sh" "$WATCH_LOG"
     assert_success
