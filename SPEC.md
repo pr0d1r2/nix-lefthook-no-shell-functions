@@ -128,24 +128,24 @@ content-aware — only linters whose file types are tracked appear in the config
 13. ~~**Malformed `flake.nix`**.~~ Fixed: corrected the package/devShell
     attribute structure and removed the invalid binding.
 
-15. **Bats fixture clobbered `TMPDIR`**. Fixed: use a test-specific fixture
+14. **Bats fixture clobbered `TMPDIR`**. Fixed: use a test-specific fixture
     variable so Bats retains its own temporary paths.
 
-14. ~~**Lefthook excludes had the wrong YAML type**.~~ Fixed: `exclude` is now
+15. ~~**Lefthook excludes had the wrong YAML type**.~~ Fixed: `exclude` is now
     emitted as a list, as required by the guardrails schema.
 
-15. **Actionlint path filtering used an outdated scalar API**. The upstream
+16. **Actionlint path filtering used an outdated scalar API**. The upstream
     helper now expects regex lists, but passed its workflow path as a string.
 
-16. **Flake evaluation broke in `checks.actionlint`**. The latest
+17. **Flake evaluation broke in `checks.actionlint`**. The latest
     `set-and-setting` actionlint fragment passed `^.github/workflows/.*` as a
     scalar to a `sourceByRegex` API that requires a list. Fixed by pinning the
     consumer to the last pre-actionlint-fragment revision until the shared
     helper is corrected upstream.
 
-17. **`file-size-check` rejected the materialization script**. The new
+18. **`file-size-check` rejected the materialization script**. The new
     `scripts/materialize-lefthook.sh` exceeded the generic 4096-byte shell
     limit. Fixed by setting the explicit `.sh` limit to 8192 bytes.
 
-18. **Unsupported `actions` fragment**. Fixed by removing the fragment from
+19. **Unsupported `actions` fragment**. Fixed by removing the fragment from
     the consumer flake; it is not available in the pinned helper revision.
