@@ -146,3 +146,20 @@ content-aware — only linters whose file types are tracked appear in the config
 
 18. **Unsupported `actions` fragment**. Fixed by removing the fragment from
     the consumer flake; it is not available in the pinned helper revision.
+
+19. **Consumer pinned `set-and-setting/0a5b85c` for good.** The actionlint
+    helper is fixed upstream, but the pin kept an old `lefthook-bats-unit`
+    (`bats --jobs`) and no `lefthook-tdd-order-bats`, so CI failed with
+    exit 127. Fixed by unpinning, following root `nixpkgs`, and adding
+    `[*.sh] switch_case_indent = true` for the EditorConfig-aware shfmt.
+
+20. **Vendored-era materializer and its specs outlived the standard.**
+    `tests/unit/lefthook.bats` ran `scripts/materialize-lefthook.sh` in the
+    repo root and overwrote the standard's `lefthook.yml`; `envrc.bats` and
+    `nix/dev/shell.bats` reassigned `TMPDIR` and removed it, killing the
+    shared bats run directory. Fixed by deleting the dead scripts and specs
+    and reducing `.envrc` to `use flake`.
+
+21. **`agent/set/skills/linter.md` had no extension table** for the
+    standard's pre-push `linter-coverage` check. Fixed by adding it; the
+    `.md` size limit rises to 16384 bytes for this bug history.
