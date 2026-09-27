@@ -128,6 +128,9 @@ content-aware — only linters whose file types are tracked appear in the config
 13. ~~**Malformed `flake.nix`**.~~ Fixed: corrected the package/devShell
     attribute structure and removed the invalid binding.
 
+15. **Bats fixture clobbered `TMPDIR`**. Fixed: use a test-specific fixture
+    variable so Bats retains its own temporary paths.
+
 14. ~~**Lefthook excludes had the wrong YAML type**.~~ Fixed: `exclude` is now
     emitted as a list, as required by the guardrails schema.
 
