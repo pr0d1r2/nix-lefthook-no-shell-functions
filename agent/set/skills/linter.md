@@ -22,6 +22,7 @@ exempt. `check-linter-coverage` reads this table.
 | `.bats` | bats-parse, bats-unit | Parse-only validation plus the suite itself; shfmt cannot parse `@test` blocks |
 | `.md` | markdownlint, markdownlint-agentic | Prose lint, with the agentic ruleset for generated documents |
 | `.yml` | yamllint, actionlint | YAML lint everywhere; actionlint additionally for `.github/workflows/*` |
+| `.yaml` | yamllint | `.coderabbit.yaml`; CodeRabbit only reads the `.yaml` spelling |
 | `.lock` | nix-flake-check | `flake.lock` is generated and validated by evaluating the flake |
 | `.gitignore` | — | git's own format; no linter in the fleet reads it |
 | `.editorconfig` | — | Consumed by editorconfig-checker, which lints other files rather than this one |
